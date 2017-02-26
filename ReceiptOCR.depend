@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1488120558 source:/home/haop/code/ReceiptOCR/main.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<tesseract/baseapi.h>
+	<leptonica/allheaders.h>
+	<iostream>
+	<string.h>
+	<ctype.h>
+	<vector>
+
