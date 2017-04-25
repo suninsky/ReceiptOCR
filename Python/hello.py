@@ -1,7 +1,7 @@
-#encoding:utf-8
+#coding=utf-8
 from werkzeug.utils import secure_filename
 from flask import Flask,render_template,jsonify,request
-import time,os,base64,ocr
+import time,os,base64,ocr,sc_gs
 
 app = Flask(__name__)
 UPLOAD_FOLDER='static/upload'
@@ -24,7 +24,6 @@ def api_upload():
     file_dir=os.path.join(basedir,app.config['UPLOAD_FOLDER'])
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
-    #print request.form
     f=request.files['myfile']  # 从表单的file字段获取文件，myfile为该表单的name值
     if f and allowed_file(f.filename):  # 判断是否是允许上传的文件类型
         fname=secure_filename(f.filename)
@@ -32,27 +31,27 @@ def api_upload():
         ext = fname.rsplit('.',1)[1]  # 获取文件后缀
         unix_time = int(time.time())
         new_filename=str(unix_time)+'.'+ext  # 修改了上传的文件名
-        f=open('temp_filename','w')
-        f.write(new_filename)
-        f.close()
-        f.save(os.path.join(file_dir,new_filename))  #保存文件到upload目录
+        path=os.path.join(file_dir,new_filename)
+        f.save(path)  #保存文件到upload目录
+        ocr.myocr(path)               #识别发票
+        f=open('result','r')
+        text=f.read()
+        fpdm,fphm=text.split('\n')[0:2]
         token = base64.b64encode(new_filename)
         print token
-
         #return jsonify({"errno":0,"errmsg":"上传成功","token":token})
-        return render_template('temp.html')+'<img src="%s"  alt="fapiao" />' % os.path.join("/static/upload",new_filename)+"</form></div></div></div></body></html>"
+        return render_template('temp.html',fpdm=fpdm,fphm=fphm,path=os.path.join("/static/upload",new_filename))
     else:
         return render_template('index.html')
 
 @app.route('/api/search',methods=['POST'],strict_slashes=False)
 def api_search():
-    f=open('temp_filename','r')
-    path=f.read()
-    f.close()
-    ocr.myocr(path)
-    f=open('result','r')
-    fpdm,fphm=text.split('\n')[0:2]
-
+    form=request.form
+    print form
+    fpdm=form['fpdm']
+    fphm=form['fphm']
+    sc_gs.search(fpdm,fphm)
+    return render_template('result.html',fpdm=fpdm,fphm=fphm)
 
 if __name__ == '__main__':
     app.debug = True
