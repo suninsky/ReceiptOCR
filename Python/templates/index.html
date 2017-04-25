@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"> 
+	<title>智能发票验真</title>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+
+<div class="container">
+
+    	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="jumbotron">
+				<h1>
+					智能发票验真系统
+				</h1>
+				<p>
+					这是一个电子科技大学大三学生参与的大学生创新创业项目，主要功能是提供两种方式进行发票查验。
+                    方法一：输入发票代码和发票号码，显示结果。
+                    方法二：上传发票照片，显示结果。
+				</p>
+				<p>
+					 <a class="btn btn-primary btn-large" href="#">了解更多</a>
+				</p>
+			</div>
+		</div>
+	</div>    
+
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<form id="form"   method="post" action="/api/upload" enctype="multipart/form-data">
+				<div class="form-group">
+					 <label for="fapiaozhaopian">发票照片：</label><input type="file" id="fapiaozhaopian" name="myfile" />
+				</div> <button type="submit" class="btn btn-default">下一步</button>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>

@@ -13,6 +13,7 @@ using namespace cv;
 #define GRAY_THRESH 150
 #define HOUGH_VOTE 100
 
+
 class Receipt
 {
     public:
@@ -24,13 +25,9 @@ class Receipt
         void TiltCorrection()
         {
             Mat srcImg = imread(m_path,0);           //读取图片
-            if (srcImg.rows*srcImg.cols>1000000)   //压缩
-            {
-                int t;
-                if (srcImg.cols>srcImg.rows)t = 1000;
-                        else t = 500;
-                resize(srcImg, srcImg, Size(t, srcImg.rows*1.0 / srcImg.cols * t), 0, 0, CV_INTER_LINEAR);
-            }
+            int t=1000;
+            resize(srcImg, srcImg, Size(t, srcImg.rows*1.0 / srcImg.cols * t), 0, 0, CV_INTER_LINEAR);
+
             Image=srcImg;
             //return srcImg;
             Point center(srcImg.cols / 2, srcImg.rows / 2);
@@ -178,10 +175,12 @@ class Receipt
             char *outText;
             tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
             // Initialize tesseract-ocr with English, without specifying tessdata path
-            if (api->Init(NULL, "eng")) {
+            if (api->Init(NULL, "chi_sim")) {
                 fprintf(stderr, "Could not initialize tesseract.\n");
                 exit(1);
             }
+            //api->SetVariable("tessedit_char_whitelist", "0123456789");
+            //api->SetVariable("tessedit_char_blacklist", "!o");
             api->SetPageSegMode(tesseract::PSM_SPARSE_TEXT_OSD);
             api->SetImage((uchar*)data.data, data.size().width, data.size().height, data.channels(), data.step1());
             // Get OCR result
@@ -197,10 +196,10 @@ class Receipt
 
         void Img2b()                    //二值化
         {
-            //threshold(Image, Image, 140, 255, THRESH_BINARY_INV);
-            int blockSize = 25;
-            int constValue = 10;
-            cv::adaptiveThreshold(Image, Image, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, blockSize, constValue);
+            //threshold(Image, Image, 170, 255, THRESH_BINARY_INV);
+            int blockSize =41 ;
+            int constValue = 5;
+            cv::adaptiveThreshold(Image, Image, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, blockSize, constValue);
             //imshow("二值化",Image);
         }
 
@@ -208,9 +207,14 @@ class Receipt
         {
             TiltCorrection();
             temp=Image.clone();
+            /// 使用中值平滑
+           // imshow("dd1",Image);
+            medianBlur ( Image, Image, 1);
+            //imshow("dd",temp);
+
             Img2b();
             ocr(Image);
-            imshow("发票",Image);
+            //imshow("发票",Image);
             //imwrite("temp.jpg", Image);
         }
 
@@ -231,21 +235,26 @@ class Receipt
 void Output(string result)
 {
     FILE * fp = fopen("result", "r");
+    cout<<endl;
     cout<<result<<endl;
-    if(result=="无效")return ;
+    if(result=="无效");
+    else{
     char str[][20] = { "发票代码:", "发票号码:", "验证码:" },s[1024];
-    int cnt=(result=="guoshui")?2:3,cnt1=0;
+    int cnt=(result=="国税")?2:3,cnt1=0;
      while (!feof(fp)&&cnt1<cnt) {
             fgets(s,1024,fp);  //读取一行
             if(strlen(s)>0)printf("%s%s",str[cnt1++],s);
     }
     fclose(fp);
-    remove("result");
+    }
 }
+
+//分两种情况，卷票使用eng，blocksize小一点，constsize大一点，普通发票使用chi_sim
 int main(int argc, char* argv[])
 {
-	//string path = argv[1];
-	string path ="test/6.jpg";
+    remove("result");
+	string path = argv[1];
+	//string path ="test/6.jpg";
 	Receipt receipt(path);
 	receipt.ProcessImage();
 	string result=receipt.type();
