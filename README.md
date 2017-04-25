@@ -1,22 +1,22 @@
-# a ReceiptOCR based on Tesseract
+# Check Receipt Authenticity Application
 
-依赖：
+This is a personal project by suninsky from UESTC,ChengDu,China.And it is participate in College students' innovative entrepreneurial training plan.follows is some introduction.
+
+dependence：
 1、Opencv
 2、Tesseract
 
-环境： Ubuntu 16.04、Codeblocks、Pycharm
+Devolop Environment： Ubuntu 16.04
 
-本项目完整包括：
+The project include：
 
-1、Android客户端；
+1)Web client with Bootstrap；
 
-2、Python服务器端；
+2)Server by Flask；
 
-3、基于Tesseract C++ API 的OCR；
+3)Optical character recognition by Tesseract and Own algorithm to locate；
 
-4、Python爬虫。
+4)Form search Python script based on Selenium.
 
-目前只有ocr部分，爬虫和服务器部分很快就要完成啦！
-
-一点微小的工作，很惭愧！
+Finaly,Thanks to free software codeblocks and gedit,and Pycharm Students version.Thanks to momoshiina.
 
