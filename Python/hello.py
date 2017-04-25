@@ -1,9 +1,7 @@
 #encoding:utf-8
 from werkzeug.utils import secure_filename
 from flask import Flask,render_template,jsonify,request
-import time
-import os
-import base64
+import time,os,base64,ocr
 
 app = Flask(__name__)
 UPLOAD_FOLDER='static/upload'
@@ -34,6 +32,9 @@ def api_upload():
         ext = fname.rsplit('.',1)[1]  # 获取文件后缀
         unix_time = int(time.time())
         new_filename=str(unix_time)+'.'+ext  # 修改了上传的文件名
+        f=open('temp_filename','w')
+        f.write(new_filename)
+        f.close()
         f.save(os.path.join(file_dir,new_filename))  #保存文件到upload目录
         token = base64.b64encode(new_filename)
         print token
@@ -45,7 +46,12 @@ def api_upload():
 
 @app.route('/api/search',methods=['POST'],strict_slashes=False)
 def api_search():
-    pass
+    f=open('temp_filename','r')
+    path=f.read()
+    f.close()
+    ocr.myocr(path)
+    f=open('result','r')
+    fpdm,fphm=text.split('\n')[0:2]
 
 
 if __name__ == '__main__':
